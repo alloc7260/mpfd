@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="mpfd",                             # Package name
-    version="0.1.0",                         # Initial version
+    version="0.5.0",                         # Initial version
     description="A decorator that makes a function into a parallel processor using multithreading.",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",  # Ensures the README is interpreted as markdown
