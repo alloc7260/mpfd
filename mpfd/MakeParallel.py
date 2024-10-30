@@ -1,6 +1,8 @@
 import concurrent.futures
 import os
-from functools import wraps 
+from functools import wraps
+from tqdm import tqdm
+
 
 def make_parallel(func):
     @wraps(func)
@@ -9,7 +11,9 @@ def make_parallel(func):
         # If the number of threads are too high, then the overhead of creating the threads will be significant.
         # Here we are choosing the number of CPUs available in the system and then multiplying it with a constant.
         # In my system, i have a total of 8 CPUs so i will be generating a maximum of 16 threads in my system.
-        number_of_threads_multiple = 2 # You can change this multiple according to you requirement
+        number_of_threads_multiple = (
+            2  # You can change this multiple according to you requirement
+        )
         number_of_workers = int(os.cpu_count() * number_of_threads_multiple)
         if len(lst) < number_of_workers:
             # If the length of the list is low, we would only require those many number of threads.
@@ -24,9 +28,16 @@ def make_parallel(func):
             return [func(lst[0])]
         # Core Code, where we are creating max number of threads and running the decorated function in parallel.
         result = []
-        with concurrent.futures.ThreadPoolExecutor(max_workers=number_of_workers) as executer:
-            bag = {executer.submit(func, i): i for i in lst}
-            for future in concurrent.futures.as_completed(bag):
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=number_of_workers
+        ) as executor:
+            # Create a progress bar
+            future_to_item = {executor.submit(func, item): item for item in lst}
+            for future in tqdm(
+                concurrent.futures.as_completed(future_to_item), total=len(lst)
+            ):
                 result.append(future.result())
+
         return result
+
     return wrapper
