@@ -1,0 +1,5 @@
+🛑remove old "build" "dist" and "mpfd.egg-info" folders🛑
+🛑Change versions before build🛑
+python setup.py sdist bdist_wheel
+twine check dist/*
+twine upload dist/*
